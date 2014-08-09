@@ -1,12 +1,12 @@
 package com.loysen.marchmadness.controller;
 
+import com.loysen.marchmadness.exceptions.TournamentNotReadyException;
 import com.loysen.marchmadness.model.Actor;
 import com.loysen.marchmadness.model.Bracket;
 import com.loysen.marchmadness.model.Tournament;
-import com.loysen.marchmadness.repository.ActorRepository;
-import com.loysen.marchmadness.repository.BracketRepository;
-import com.loysen.marchmadness.repository.TournamentRepository;
-import org.bson.types.ObjectId;
+import com.loysen.marchmadness.service.ActorService;
+import com.loysen.marchmadness.service.BracketService;
+import com.loysen.marchmadness.service.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -26,76 +26,97 @@ import java.util.Set;
 @RequestMapping(value = "/tournaments")
 public class TournamentController {
 
-    private TournamentRepository tournamentRepository;
-    private BracketRepository bracketRepository;
-    private ActorRepository actorRepository;
+    private TournamentService tournamentService;
+    private BracketService bracketService;
+    private ActorService actorService;
 
     @Autowired
-    public TournamentController(TournamentRepository tournamentRepository, BracketRepository bracketRepository, ActorRepository actorRepository){
-        this.tournamentRepository = tournamentRepository;
-        this.bracketRepository = bracketRepository;
-        this.actorRepository = actorRepository;
+    public TournamentController(TournamentService tournamentService, BracketService bracketService, ActorService actorService) {
+        this.tournamentService = tournamentService;
+        this.bracketService = bracketService;
+        this.actorService = actorService;
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Tournament>> findAll() {
-        return new ResponseEntity<List<Tournament>>(tournamentRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<List<Tournament>>(tournamentService.findAll(), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Tournament> create(@RequestParam(value = "tournamentName") String tournamentName) {
-        Tournament tournament = tournamentRepository.save(new Tournament(tournamentName));
+    public ResponseEntity<Tournament> create() {
+        Tournament tournament = tournamentService.create();
         return new ResponseEntity<Tournament>(tournament, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/{tournamentId}/publish", method = RequestMethod.POST)
-    public ResponseEntity<Tournament> publish(@PathVariable ObjectId tournamentId) {
-        Tournament tournament = tournamentRepository.findOne(tournamentId.toString());
-        tournament.setPublished(true);
+    @RequestMapping(method = RequestMethod.PUT)
+    public ResponseEntity<Tournament> update() {
+        return null;
+    }
 
-        return new ResponseEntity<Tournament>(tournament, HttpStatus.OK);
+    @RequestMapping(value = "/{tournamentId}/publish", method = RequestMethod.POST)
+    public ResponseEntity<Tournament> publish(@PathVariable String tournamentId) throws TournamentNotReadyException {
+        Optional<Tournament> tournament = tournamentService.publish(tournamentId);
+        if (!tournament.isPresent()) {
+            return new ResponseEntity<Tournament>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Tournament>(tournament.get(), HttpStatus.OK);
     }
 
     // Bracket section
 
     @RequestMapping(value = "/{tournamentId}/brackets", method = RequestMethod.GET)
-    public ResponseEntity<Set<Bracket>> getBrackets(@PathVariable ObjectId tournamentId) {
-        return new ResponseEntity<Set<Bracket>>(bracketRepository.findByTournamentId(tournamentId), HttpStatus.OK);
+    public ResponseEntity<Set<Bracket>> getBrackets(@PathVariable String tournamentId) {
+        return new ResponseEntity<Set<Bracket>>(bracketService.findAllByTournament(tournamentId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{tournamentId}/brackets", method = RequestMethod.POST)
-    public ResponseEntity<Bracket> addBracket(@PathVariable ObjectId tournamentId,
-                                              @RequestParam(value = "bracketName") String bracketName) {
-        Bracket bracket = new Bracket(bracketName, tournamentId);
-        return new ResponseEntity<Bracket>(bracketRepository.save(bracket), HttpStatus.CREATED);
+    public ResponseEntity<Bracket> addBracket(@PathVariable String tournamentId) {
+        Optional<Bracket> bracket = bracketService.createForTournament(tournamentId);
+
+        if (!bracket.isPresent()) {
+            return new ResponseEntity<Bracket>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Bracket>(bracket.get(), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/{tournamentId}/brackets/{bracketId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Bracket> deleteBracket(@PathVariable String bracketId) {
-        Bracket bracket = bracketRepository.findOne(bracketId);
-        bracketRepository.delete(bracket);
-        return new ResponseEntity<Bracket>(bracket, HttpStatus.OK);
+    public ResponseEntity<Bracket> removeBracket(@PathVariable String tournamentId, @PathVariable String bracketId) {
+
+        Optional<Bracket> bracket = bracketService.remove(tournamentId, bracketId);
+
+        if (!bracket.isPresent()) {
+            return new ResponseEntity<Bracket>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Bracket>(bracket.get(), HttpStatus.OK);
     }
 
     // Actor Section
 
     @RequestMapping(value = "/{tournamentId}/actors", method = RequestMethod.GET)
-    public ResponseEntity<Set<Actor>> getActors(@PathVariable ObjectId tournamentId) {
-        return new ResponseEntity<Set<Actor>>(actorRepository.findByTournamentId(tournamentId), HttpStatus.OK);
+    public ResponseEntity<Set<Actor>> getActors(@PathVariable String tournamentId) {
+        return new ResponseEntity<Set<Actor>>(actorService.findAllByTournament(tournamentId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{tournamentId}/actors", method = RequestMethod.POST)
-    public ResponseEntity<Actor> addActor(@PathVariable ObjectId tournamentId,
-                                          @RequestParam(value = "actorName") String actorName) {
-        Actor actor = new Actor(actorName, tournamentId);
+    public ResponseEntity<Actor> addActor(@PathVariable String tournamentId) {
+        Optional<Actor> actor = actorService.createForTournament(tournamentId);
 
-        return new ResponseEntity<Actor>(actorRepository.save(actor), HttpStatus.CREATED);
+        if (!actor.isPresent()) {
+            return new ResponseEntity<Actor>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Actor>(actor.get(), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/{tournamentId}/actors/{actorId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Actor> deleteActor(@PathVariable String actorId) {
-        Actor actor = actorRepository.findOne(actorId);
-        actorRepository.delete(actor);
-        return new ResponseEntity<Actor>(actor, HttpStatus.OK);
+    public ResponseEntity<Actor> removeActor(@PathVariable String tournamentId, @PathVariable String actorId) {
+        Optional<Actor> actor = actorService.remove(tournamentId, actorId);
+
+        if (!actor.isPresent()) {
+            return new ResponseEntity<Actor>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Actor>(actor.get(), HttpStatus.OK);
     }
 }

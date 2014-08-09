@@ -1,6 +1,8 @@
 import com.loysen.marchmadness.controller.TournamentController
 import com.loysen.marchmadness.model.Tournament
-import com.loysen.marchmadness.repository.TournamentRepository
+import com.loysen.marchmadness.service.ActorService
+import com.loysen.marchmadness.service.BracketService
+import com.loysen.marchmadness.service.TournamentService
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
@@ -20,10 +22,12 @@ class TournamentControllerTest extends Specification {
 
     MockMvc mockMvc
 
-    TournamentRepository tournamentRepository = Mock()
+    TournamentService tournamentService = Mock()
+    BracketService bracketService = Mock()
+    ActorService actorService = Mock()
 
     def setup() {
-        TournamentController controller = new TournamentController(tournamentRepository, null, null);
+        TournamentController controller = new TournamentController(tournamentService, bracketService, actorService);
 
         mockMvc = standaloneSetup(controller).build();
     }
@@ -31,7 +35,7 @@ class TournamentControllerTest extends Specification {
     def "Find All Tournaments"() {
         given:
         def tournament1 = new Tournament("one");
-        tournamentRepository.findAll() >> Arrays.asList(tournament1)
+        tournamentService.findAll() >> Arrays.asList(tournament1)
 
         when:
         def response = mockMvc.perform(get("/tournaments"))
@@ -41,5 +45,9 @@ class TournamentControllerTest extends Specification {
                 .andExpect(content().contentType(JSON_UTF8))
                 .andExpect(jsonPath('$', hasSize(1)))
                 .andExpect(jsonPath('$[0].name').value("one"))
+    }
+
+    def "Create Tournament with name"() {
+
     }
 }
