@@ -25,8 +25,18 @@ public class Tournament {
         return id;
     }
 
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+
     public String getName() {
         return name;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Set<String> getDivisions() {
