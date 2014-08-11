@@ -15,22 +15,28 @@ public class Tournament {
 
     @Id
     private ObjectId id;
-    private final String name;
+    private String name;
     private Set<String> divisions;
-    private boolean published;
+    private boolean published = false;
 
-    public Tournament(String name) {
-        this.name = name;
-        this.published = false;
-    }
 
     @JsonSerialize(using = ObjectIdSerializer.class)
     public ObjectId getId() {
         return id;
     }
 
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+
     public String getName() {
         return name;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Set<String> getDivisions() {

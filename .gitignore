@@ -1,11 +1,10 @@
+#maven
+log/
+target/
+
 #idea files
 *.iml
 .idea/
 
 #property files
 *.properties
-
-#maven
-log/ 
-target/ 
-
