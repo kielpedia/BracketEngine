@@ -47,9 +47,8 @@ public interface TournamentService {
      *
      * @param id
      * @return
-     * @throws TournamentNotReadyException
      */
-    Optional<Tournament> publish(String id) throws TournamentNotReadyException;
+    Optional<Tournament> publish(String id);
 
     /**
      * Remove a {@link Tournament} if it is not active
