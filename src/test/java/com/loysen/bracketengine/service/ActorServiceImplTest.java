@@ -73,12 +73,23 @@ public class ActorServiceImplTest {
     public void createForTournament() {
         Tournament tournament = mock(Tournament.class);
         when(tournamentService.findById("test")).thenReturn(Optional.of(tournament));
-        when(actorRepository.save(any(Actor.class))).thenReturn(new Actor("test"));
+        when(actorRepository.save(any(Actor.class))).thenReturn(new Actor("name","test"));
 
-        Optional<Actor> actor = actorService.createForTournament("test");
+        Optional<Actor> actor = actorService.createForTournament("name", "test");
 
         assertTrue(actor.isPresent());
         assertEquals("test", actor.get().getTournamentId());
+    }
+
+    @Test
+    public void createForTournament_nameAlreadyExists() {
+        Tournament tournament = mock(Tournament.class);
+        when(tournamentService.findById("test")).thenReturn(Optional.of(tournament));
+        when(actorRepository.findByNameAndTournamentId("name", "test")).thenReturn(actor1);
+
+        Optional<Actor> actor = actorService.createForTournament("name","test");
+
+        assertFalse(actor.isPresent());
     }
 
     @Test
@@ -86,14 +97,14 @@ public class ActorServiceImplTest {
         Tournament tournament = null;
         when(tournamentService.findById("test")).thenReturn(Optional.ofNullable(tournament));
 
-        Optional<Actor> actor = actorService.createForTournament("test");
+        Optional<Actor> actor = actorService.createForTournament("name", "test");
 
         assertFalse(actor.isPresent());
     }
 
     @Test
     public void update() {
-        Actor actor = new Actor("tournamentId");
+        Actor actor = new Actor("name","tournamentId");
 
         when(actorRepository.save(any(Actor.class))).thenReturn(actor);
 

@@ -27,7 +27,7 @@ public interface ActorService {
      * @param tournamentId {@link com.loysen.bracketengine.model.Tournament} id to link the actor to
      * @return
      */
-    Optional<Actor> createForTournament(String tournamentId);
+    Optional<Actor> createForTournament(String name, String tournamentId);
 
     /**
      * @param actor

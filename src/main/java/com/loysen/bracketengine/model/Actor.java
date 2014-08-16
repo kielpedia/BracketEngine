@@ -14,7 +14,9 @@ public class Actor {
     private final String tournamentId;
     private String name;
 
-    public Actor(String tournamentId) {
+
+    public Actor(String name, String tournamentId) {
+        this.name = name;
         this.tournamentId = tournamentId;
     }
 

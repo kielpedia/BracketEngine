@@ -36,16 +36,24 @@ public class ActorServiceImpl implements ActorService {
     }
 
     @Override
-    public Optional<Actor> createForTournament(String tournamentId) {
+    public Optional<Actor> createForTournament(String name, String tournamentId) {
+        notNull(name);
         notNull(tournamentId);
 
         Optional<Tournament> tournamentOptional = tournamentService.findById(tournamentId);
-
+        //if the Tournament doesn't exist, dont create a new Actor
         if (!tournamentOptional.isPresent()) {
             return Optional.empty();
         }
 
-        Actor newActor = new Actor(tournamentId);
+        Optional<Actor> actorOptional = Optional.ofNullable(actorRepository.findByNameAndTournamentId(name,
+                tournamentId));
+        //If an Actor with the same name exists for this Tournament, dont create a new Actor
+        if (actorOptional.isPresent()) {
+            return Optional.empty();
+        }
+
+        Actor newActor = new Actor(name, tournamentId);
         return Optional.of(actorRepository.save(newActor));
     }
 

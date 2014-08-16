@@ -99,8 +99,8 @@ public class TournamentController {
     }
 
     @RequestMapping(value = "/{tournamentId}/actors", method = RequestMethod.POST)
-    public ResponseEntity<Actor> addActor(@PathVariable String tournamentId) {
-        Optional<Actor> actor = actorService.createForTournament(tournamentId);
+    public ResponseEntity<Actor> addActor(@PathVariable String tournamentId, @RequestParam("name") String name) {
+        Optional<Actor> actor = actorService.createForTournament(name, tournamentId);
 
         if (!actor.isPresent()) {
             return new ResponseEntity<Actor>(HttpStatus.NOT_FOUND);

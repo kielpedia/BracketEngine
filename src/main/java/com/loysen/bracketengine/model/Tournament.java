@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -18,6 +19,8 @@ public class Tournament {
     private String name;
     private Set<String> divisions;
     private boolean published = false;
+    private LocalDateTime activationDate;
+
 
 
     @JsonSerialize(using = ObjectIdSerializer.class)
@@ -54,4 +57,14 @@ public class Tournament {
     public void setPublished(boolean published) {
         this.published = published;
     }
+
+    public LocalDateTime getActivationDate() {
+        return activationDate;
+    }
+
+    public void setActivationDate(LocalDateTime activationDate) {
+        this.activationDate = activationDate;
+    }
+
+
 }
