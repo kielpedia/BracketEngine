@@ -1,7 +1,5 @@
 package com.loysen.bracketengine.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,26 +10,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Actor {
 
     @Id
-    private ObjectId id;
-    private final ObjectId tournamentId;
-    private final String name;
+    private String id;
+    private final String tournamentId;
+    private String name;
 
-    public Actor(String name, ObjectId tournamentId){
-        this.name = name;
+    public Actor(String tournamentId) {
         this.tournamentId = tournamentId;
     }
 
-    @JsonSerialize(using = ObjectIdSerializer.class)
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    @JsonSerialize(using = ObjectIdSerializer.class)
-    public ObjectId getTournamentId() {
+    public String getTournamentId() {
         return tournamentId;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

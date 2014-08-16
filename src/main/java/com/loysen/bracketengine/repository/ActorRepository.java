@@ -11,5 +11,5 @@ import java.util.Set;
  */
 public interface ActorRepository extends MongoRepository<Actor, String> {
 
-    public Set<Actor> findByTournamentId(ObjectId tournamentId);
+    public Set<Actor> findByTournamentId(String tournamentId);
 }
