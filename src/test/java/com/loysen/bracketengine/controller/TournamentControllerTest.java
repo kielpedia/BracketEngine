@@ -5,7 +5,6 @@ import com.loysen.bracketengine.model.Tournament;
 import com.loysen.bracketengine.service.ActorService;
 import com.loysen.bracketengine.service.BracketService;
 import com.loysen.bracketengine.service.TournamentService;
-import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,9 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Matchers.any;
@@ -79,10 +79,14 @@ public class TournamentControllerTest {
 
     @Test
     public void update() throws Exception {
+        Set<String> divisions = new HashSet<String>();
+        divisions.add("one");
+        divisions.add("two");
         Tournament tournament1 = new Tournament();
         tournament1.setName("one");
-        tournament1.setId(new ObjectId());
-        tournament1.setDivisions(new HashSet<String>());
+        tournament1.setActivationDate(LocalDateTime.now());
+        tournament1.setId("id");
+        tournament1.setDivisions(divisions);
         String json = new ObjectMapper().writer().writeValueAsString(tournament1);
         when(tournamentService.update(any(Tournament.class))).thenReturn(tournament1);
 
@@ -94,24 +98,37 @@ public class TournamentControllerTest {
     }
 
     @Test
+    public void update_invalid() throws Exception {
+        Set<String> divisions = new HashSet<String>();
+        divisions.add("one");
+        divisions.add("two");
+        Tournament tournament1 = new Tournament();
+        tournament1.setName("one");
+        tournament1.setId("id");
+        tournament1.setDivisions(divisions);
+        String json = new ObjectMapper().writer().writeValueAsString(tournament1);
+        when(tournamentService.update(any(Tournament.class))).thenReturn(tournament1);
+
+        mockMvc.perform(put("/tournaments").content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void publish() throws Exception {
         Tournament tournament1 = new Tournament();
         tournament1.setName("one");
-        Optional<Tournament> optional = Optional.of(tournament1);
-        when(tournamentService.publish("1")).thenReturn(optional);
+        when(tournamentService.publish("1")).thenReturn(true);
 
         mockMvc.perform(post("/tournaments/1/publish"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(JSON_UTF8))
-                .andExpect(jsonPath("$name").value("one"));
+                .andExpect(status().isOk());
 
 
     }
 
     @Test
     public void publish_noMatchingId() throws Exception {
-        Optional<Tournament> optional = Optional.empty();
-        when(tournamentService.publish("1")).thenReturn(optional);
+        when(tournamentService.publish("1")).thenReturn(false);
 
         mockMvc.perform(post("/tournaments/1/publish"))
                 .andExpect(status().isNotFound());

@@ -125,7 +125,7 @@ public class ActorServiceImplTest {
     }
 
     @Test
-    public void remove_tournamentNotFoundOrDoesNotMatch() {
+    public void remove_actorNotFoundOrDoesNotMatch() {
         when(actor1.getTournamentId()).thenReturn("tournamentId1");
         when(actorRepository.findOne("actorId")).thenReturn(null);
 
@@ -134,6 +134,7 @@ public class ActorServiceImplTest {
         assertFalse(optional.isPresent());
         verify(actorRepository, never()).delete(actor1);
 
+        when(actorRepository.findOne("actorId")).thenReturn(actor1);
         when(actor1.getTournamentId()).thenReturn("tournamentId1");
 
         optional = actorService.remove("tournamentId", "actorId");
@@ -141,4 +142,5 @@ public class ActorServiceImplTest {
         assertFalse(optional.isPresent());
         verify(actorRepository, never()).delete(actor1);
     }
+
 }

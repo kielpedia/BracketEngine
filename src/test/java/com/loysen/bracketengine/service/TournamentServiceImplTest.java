@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -103,13 +104,11 @@ public class TournamentServiceImplTest {
     public void publish() {
         Tournament tournament = new Tournament();
         tournament.setPublished(false);
+        tournament.setActivationDate(LocalDateTime.MAX);
 
         when(tournamentRepository.findOne("test")).thenReturn(tournament);
 
-        Optional optional = tournamentService.publish("test");
-
-        assertTrue(optional.isPresent());
-        assertTrue(tournament.isPublished());
+        assertTrue(tournamentService.publish("test"));
         verify(tournamentRepository, times(1)).save(tournament);
     }
 
@@ -118,9 +117,30 @@ public class TournamentServiceImplTest {
 
         when(tournamentRepository.findOne("test")).thenReturn(null);
 
-        Optional optional = tournamentService.publish("test");
+        assertFalse(tournamentService.publish("test"));
+    }
 
-        assertFalse(optional.isPresent());
+    @Test
+    public void publish_activationDateInPast() {
+        Tournament tournament = new Tournament();
+        tournament.setPublished(true);
+        tournament.setActivationDate(LocalDateTime.MAX);
+
+        when(tournamentRepository.findOne("test")).thenReturn(tournament);
+
+
+        assertFalse(tournamentService.publish("test"));
+    }
+
+    @Test
+    public void publish_alreadyPublished() {
+        Tournament tournament = new Tournament();
+        tournament.setPublished(false);
+        tournament.setActivationDate(LocalDateTime.MIN);
+
+        when(tournamentRepository.findOne("test")).thenReturn(tournament);
+
+        assertFalse(tournamentService.publish("test"));
     }
 
     @Test

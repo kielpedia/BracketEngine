@@ -6,6 +6,7 @@ import com.loysen.bracketengine.service.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,18 +52,20 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
-    public Optional<Tournament> publish(String id) {
+    public boolean publish(String id) {
         notNull(id);
         Tournament tournament = tournamentRepository.findOne(id);
 
-        if (tournament == null) {
-            return Optional.empty();
+        if (tournament == null
+                || tournament.isPublished()
+                || tournament.getActivationDate().isBefore(LocalDateTime.now())) {
+            return false;
         }
 
         tournament.setPublished(true);
         tournamentRepository.save(tournament);
 
-        return Optional.of(tournament);
+        return true;
     }
 
     @Override

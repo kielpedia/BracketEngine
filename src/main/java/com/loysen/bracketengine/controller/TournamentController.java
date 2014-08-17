@@ -1,5 +1,6 @@
 package com.loysen.bracketengine.controller;
 
+import com.loysen.bracketengine.controller.error.ApiError;
 import com.loysen.bracketengine.exceptions.TournamentNotReadyException;
 import com.loysen.bracketengine.model.Actor;
 import com.loysen.bracketengine.model.Bracket;
@@ -11,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,8 +49,9 @@ public class TournamentController {
         return new ResponseEntity<Tournament>(tournament, HttpStatus.CREATED);
     }
 
+
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Tournament> update(@RequestBody Tournament tournament) {
+    public ResponseEntity<Tournament> update(@Valid @RequestBody Tournament tournament) {
         tournament = tournamentService.update(tournament);
 
         return new ResponseEntity<Tournament>(tournament, HttpStatus.OK);
@@ -55,12 +59,12 @@ public class TournamentController {
 
     @RequestMapping(value = "/{tournamentId}/publish", method = RequestMethod.POST)
     public ResponseEntity<Tournament> publish(@PathVariable String tournamentId) throws TournamentNotReadyException {
-        Optional<Tournament> tournament = tournamentService.publish(tournamentId);
-        if (!tournament.isPresent()) {
+        boolean outcome = tournamentService.publish(tournamentId);
+        if (!outcome) {
             return new ResponseEntity<Tournament>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<Tournament>(tournament.get(), HttpStatus.OK);
+        return new ResponseEntity<Tournament>(HttpStatus.OK);
     }
 
     // Bracket section
@@ -118,5 +122,12 @@ public class TournamentController {
         }
 
         return new ResponseEntity<Actor>(actor.get(), HttpStatus.OK);
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ApiError handleException(MethodArgumentNotValidException exception) {
+        return new ApiError(exception.getBindingResult().getAllErrors());
     }
 }

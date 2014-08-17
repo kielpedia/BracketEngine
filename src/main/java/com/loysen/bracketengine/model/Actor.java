@@ -1,5 +1,6 @@
 package com.loysen.bracketengine.model;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,7 +12,9 @@ public class Actor {
 
     @Id
     private String id;
+    @NotBlank
     private final String tournamentId;
+    @NotBlank
     private String name;
 
 

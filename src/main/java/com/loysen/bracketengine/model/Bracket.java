@@ -1,7 +1,5 @@
 package com.loysen.bracketengine.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,19 +13,17 @@ import java.util.Set;
 public class Bracket {
 
     @Id
-    private ObjectId id;
+    private String id;
     @Indexed(sparse = true, unique = true)
-    private final String name;
+    private String name;
     private Set<Match> matches;
-    private ObjectId tournamentId;
+    private final String tournamentId;
 
-    public Bracket(String name, ObjectId tournamentId) {
-        this.name = name;
+    public Bracket(String tournamentId) {
         this.tournamentId = tournamentId;
     }
 
-    @JsonSerialize(using = ObjectIdSerializer.class)
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
@@ -35,12 +31,19 @@ public class Bracket {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Set<Match> getMatches() {
         return matches;
     }
 
-    @JsonSerialize(using = ObjectIdSerializer.class)
-    public ObjectId getTournamentId() {
+    public void setMatches(Set<Match> matches) {
+        this.matches = matches;
+    }
+
+    public String getTournamentId() {
         return tournamentId;
     }
 }

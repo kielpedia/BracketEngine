@@ -48,7 +48,7 @@ public interface TournamentService {
      * @param id
      * @return
      */
-    Optional<Tournament> publish(String id);
+    boolean publish(String id);
 
     /**
      * Remove a {@link Tournament} if it is not active
