@@ -1,8 +1,9 @@
-package com.loysen.bracketengine.service;
+package com.loysen.bracketengine.service.impl;
 
 import com.loysen.bracketengine.model.Actor;
 import com.loysen.bracketengine.model.Tournament;
 import com.loysen.bracketengine.repository.ActorRepository;
+import com.loysen.bracketengine.service.TournamentService;
 import com.loysen.bracketengine.service.impl.ActorServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,10 +16,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -73,7 +72,7 @@ public class ActorServiceImplTest {
     public void createForTournament() {
         Tournament tournament = mock(Tournament.class);
         when(tournamentService.findById("test")).thenReturn(Optional.of(tournament));
-        when(actorRepository.save(any(Actor.class))).thenReturn(new Actor("name","test"));
+        when(actorRepository.save(any(Actor.class))).thenReturn(new Actor("name", "test"));
 
         Optional<Actor> actor = actorService.createForTournament("name", "test");
 
@@ -87,7 +86,7 @@ public class ActorServiceImplTest {
         when(tournamentService.findById("test")).thenReturn(Optional.of(tournament));
         when(actorRepository.findByNameAndTournamentId("name", "test")).thenReturn(actor1);
 
-        Optional<Actor> actor = actorService.createForTournament("name","test");
+        Optional<Actor> actor = actorService.createForTournament("name", "test");
 
         assertFalse(actor.isPresent());
     }
@@ -104,7 +103,7 @@ public class ActorServiceImplTest {
 
     @Test
     public void update() {
-        Actor actor = new Actor("name","tournamentId");
+        Actor actor = new Actor("name", "tournamentId");
 
         when(actorRepository.save(any(Actor.class))).thenReturn(actor);
 

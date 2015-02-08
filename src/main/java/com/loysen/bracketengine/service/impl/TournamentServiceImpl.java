@@ -1,16 +1,17 @@
 package com.loysen.bracketengine.service.impl;
 
+import checkers.nullness.quals.NonNull;
+import com.loysen.bracketengine.exceptions.TournamentNotReadyException;
 import com.loysen.bracketengine.model.Tournament;
 import com.loysen.bracketengine.repository.TournamentRepository;
 import com.loysen.bracketengine.service.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.util.Assert.notNull;
 
 /**
  * Created by kielpedia on 8/8/14.
@@ -26,51 +27,66 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
+    @NonNull
     public List<Tournament> findAll() {
         return tournamentRepository.findAll();
     }
 
     @Override
-    public Optional<Tournament> findById(String id) {
-        notNull(id);
+    @NonNull
+    public Optional<Tournament> findById(@NonNull String id) {
+        Assert.notNull(id);
 
         return Optional.ofNullable(tournamentRepository.findOne(id));
     }
 
     @Override
+    @NonNull
     public Tournament create() {
-        Tournament tournament = new Tournament();
-
-        return tournamentRepository.save(tournament);
+        return tournamentRepository.save(new Tournament());
     }
 
     @Override
-    public Tournament update(Tournament tournament) {
-        notNull(tournament);
+    @NonNull
+    public Optional<Tournament> update(@NonNull Tournament tournament) {
+        Assert.notNull(tournament);
 
-        return tournamentRepository.save(tournament);
+        Tournament original = tournamentRepository.findOne(tournament.getId().toString());
+
+        if (original == null) {
+            return Optional.ofNullable(null);
+        }
+
+        original.setName(tournament.getName());
+        original.setDivisions(tournament.getDivisions());
+
+
+        return Optional.ofNullable(tournamentRepository.save(original));
     }
 
     @Override
-    public boolean publish(String id) {
-        notNull(id);
-        Tournament tournament = tournamentRepository.findOne(id);
+    @NonNull
+    public boolean publish(@NonNull String id) {
+        Assert.notNull(id);
 
-        if (tournament == null
-                || tournament.isPublished()
-                || tournament.getActivationDate().isBefore(LocalDateTime.now())) {
+        Tournament original = tournamentRepository.findOne(id);
+
+        if (original == null) {
             return false;
         }
 
-        tournament.setPublished(true);
-        tournamentRepository.save(tournament);
+        // TODO: Add logic to check if it can be published
+
+        original.setPublished(true);
+        tournamentRepository.save(original);
+
 
         return true;
     }
 
     @Override
     public Optional<Tournament> remove(String id) {
-        notNull(id);
+        Assert.notNull(id);
 
         Optional tournament = Optional.ofNullable(tournamentRepository.findOne(id));
 
