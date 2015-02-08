@@ -1,5 +1,6 @@
 package com.loysen.bracketengine.service;
 
+import checkers.nullness.quals.NonNull;
 import com.loysen.bracketengine.exceptions.TournamentNotReadyException;
 import com.loysen.bracketengine.model.Tournament;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 /**
  * Service for Reading and Manipulating {@link Tournament} objects
- * <p/>
+ * <p>
  * Created by kielpedia on 8/8/14.
  */
 public interface TournamentService {
@@ -18,6 +19,7 @@ public interface TournamentService {
      *
      * @return
      */
+    @NonNull
     List<Tournament> findAll();
 
     /**
@@ -26,6 +28,7 @@ public interface TournamentService {
      * @param id
      * @return Optional with Tournament if found, empty if not
      */
+    @NonNull
     Optional<Tournament> findById(String id);
 
     /**
@@ -33,6 +36,7 @@ public interface TournamentService {
      *
      * @return
      */
+    @NonNull
     Tournament create();
 
     /**
@@ -40,7 +44,8 @@ public interface TournamentService {
      *
      * @return
      */
-    Tournament update(Tournament tournament);
+    @NonNull
+    Optional<Tournament> update(@NonNull Tournament tournament);
 
     /**
      * Publish an existing {@link Tournament}  if it is in the correct state
@@ -49,7 +54,8 @@ public interface TournamentService {
      * @return
      * @throws TournamentNotReadyException
      */
-    Optional<Tournament> publish(String id) throws TournamentNotReadyException;
+    @NonNull
+    Optional<Tournament> publish(@NonNull String id) throws TournamentNotReadyException;
 
     /**
      * Remove a {@link Tournament} if it is not active
@@ -57,6 +63,7 @@ public interface TournamentService {
      * @param id
      * @return Optional with Tournament if removed, empty if not
      */
-    Optional<Tournament> remove(String id);
+    @NonNull
+    Optional<Tournament> remove(@NonNull String id);
 
 }

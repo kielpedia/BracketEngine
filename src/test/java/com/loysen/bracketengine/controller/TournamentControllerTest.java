@@ -14,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -66,6 +68,26 @@ public class TournamentControllerTest {
     }
 
     @Test
+    public void findOne() throws Exception {
+        Tournament tournament1 = new Tournament();
+        tournament1.setName("one");
+        when(tournamentService.findById(anyString())).thenReturn(Optional.of(tournament1));
+
+        mockMvc.perform(get("/tournaments/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(JSON_UTF8))
+                .andExpect(jsonPath("$.name").value("one"));
+    }
+
+    @Test
+    public void findOne_notFound() throws Exception {
+        when(tournamentService.findById(anyString())).thenReturn(Optional.ofNullable(null));
+
+        mockMvc.perform(get("/tournaments/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void create() throws Exception {
         Tournament tournament1 = new Tournament();
         tournament1.setName("one");
@@ -74,7 +96,7 @@ public class TournamentControllerTest {
         mockMvc.perform(post("/tournaments"))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(JSON_UTF8))
-                .andExpect(jsonPath("$name").value("one"));
+                .andExpect(jsonPath("$.name").value("one"));
     }
 
     @Test
@@ -82,15 +104,42 @@ public class TournamentControllerTest {
         Tournament tournament1 = new Tournament();
         tournament1.setName("one");
         tournament1.setId(new ObjectId());
-        tournament1.setDivisions(new HashSet<String>());
+        tournament1.setDivisions(new HashSet<>());
         String json = new ObjectMapper().writer().writeValueAsString(tournament1);
-        when(tournamentService.update(any(Tournament.class))).thenReturn(tournament1);
+        when(tournamentService.update(any(Tournament.class))).thenReturn(Optional.of(tournament1));
 
-        mockMvc.perform(put("/tournaments").content(json)
+        mockMvc.perform(put("/tournaments/" + tournament1.getId().toString()).content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(JSON_UTF8))
-                .andExpect(jsonPath("$name").value("one"));
+                .andExpect(jsonPath("$.name").value("one"));
+    }
+
+    @Test
+    public void update_notFound() throws Exception {
+        Tournament tournament1 = new Tournament();
+        tournament1.setName("one");
+        tournament1.setId(new ObjectId());
+        tournament1.setDivisions(new HashSet<>());
+        String json = new ObjectMapper().writer().writeValueAsString(tournament1);
+        when(tournamentService.update(any(Tournament.class))).thenReturn(Optional.ofNullable(null));
+
+        mockMvc.perform(put("/tournaments/" + tournament1.getId().toString()).content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void update_badRequest() throws Exception {
+        Tournament tournament1 = new Tournament();
+        tournament1.setName("one");
+        tournament1.setId(new ObjectId());
+        tournament1.setDivisions(new HashSet<>());
+        String json = new ObjectMapper().writer().writeValueAsString(tournament1);
+
+        mockMvc.perform(put("/tournaments/1").content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -103,17 +152,39 @@ public class TournamentControllerTest {
         mockMvc.perform(post("/tournaments/1/publish"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(JSON_UTF8))
-                .andExpect(jsonPath("$name").value("one"));
+                .andExpect(jsonPath("$.name").value("one"));
 
 
     }
 
     @Test
-    public void publish_noMatchingId() throws Exception {
+    public void publish_notFound() throws Exception {
         Optional<Tournament> optional = Optional.empty();
         when(tournamentService.publish("1")).thenReturn(optional);
 
         mockMvc.perform(post("/tournaments/1/publish"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteTournament() throws Exception {
+        Tournament tournament1 = new Tournament();
+        tournament1.setName("one");
+        Optional<Tournament> optional = Optional.of(tournament1);
+        when(tournamentService.remove("1")).thenReturn(optional);
+
+        mockMvc.perform(delete("/tournaments/1"))
+                .andExpect(status().isOk());
+
+
+    }
+
+    @Test
+    public void deleteTournament_notFound() throws Exception {
+        Optional<Tournament> optional = Optional.empty();
+        when(tournamentService.remove("1")).thenReturn(optional);
+
+        mockMvc.perform(delete("/tournaments/1"))
                 .andExpect(status().isNotFound());
     }
 }
