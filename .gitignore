@@ -8,3 +8,7 @@ target/
 
 #property files
 *.properties
+
+bower_components
+node_modules
+src/main/webapp/libs

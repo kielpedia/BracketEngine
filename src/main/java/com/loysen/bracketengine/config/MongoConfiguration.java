@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
  * Created by kielpedia on 6/28/14.
  */
 @Configuration
-@PropertySource("classpath:datasource.properties")
+@PropertySource("classpath:config/datasource.properties")
 public class MongoConfiguration {
 
     @Value("${mongo.url}")

@@ -1,7 +1,6 @@
 package com.loysen.bracketengine.service.impl;
 
 import checkers.nullness.quals.NonNull;
-import com.loysen.bracketengine.exceptions.TournamentNotReadyException;
 import com.loysen.bracketengine.model.Tournament;
 import com.loysen.bracketengine.repository.TournamentRepository;
 import com.loysen.bracketengine.service.TournamentService;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +49,7 @@ public class TournamentServiceImpl implements TournamentService {
     public Optional<Tournament> update(@NonNull Tournament tournament) {
         Assert.notNull(tournament);
 
-        Tournament original = tournamentRepository.findOne(tournament.getId().toString());
+        Tournament original = tournamentRepository.findOne(tournament.getId());
 
         if (original == null) {
             return Optional.ofNullable(null);
@@ -88,7 +86,7 @@ public class TournamentServiceImpl implements TournamentService {
     public Optional<Tournament> remove(String id) {
         Assert.notNull(id);
 
-        Optional tournament = Optional.ofNullable(tournamentRepository.findOne(id));
+        Optional<Tournament> tournament = Optional.ofNullable(tournamentRepository.findOne(id));
 
         if (tournament.isPresent()) {
             tournamentRepository.delete(id);

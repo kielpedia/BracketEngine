@@ -62,7 +62,6 @@ public interface TournamentService {
      * @param id
      * @return Optional with Tournament if removed, empty if not
      */
-    @NonNull
-    Optional<Tournament> remove(@NonNull String id);
+    Optional remove(String id);
 
 }

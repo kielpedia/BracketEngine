@@ -1,0 +1,17 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10">
+            <!--Body content-->
+            <h2>Tournaments:</h2>
+            <button ng-click="createTournament()">New</button>
+            <ul class="tournaments">
+                <li ng-repeat="tournament in tournaments ">
+                    <a href="#/tournaments/{{tournament.id}}">{{tournament.id}}</a>
+
+                    <p>{{tournament.name}}</p>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</div>

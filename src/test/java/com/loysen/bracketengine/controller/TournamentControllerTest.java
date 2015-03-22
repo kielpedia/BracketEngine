@@ -60,7 +60,7 @@ public class TournamentControllerTest {
         tournament1.setName("one");
         when(tournamentService.findAll()).thenReturn(Arrays.asList(tournament1));
 
-        mockMvc.perform(get("/tournaments"))
+        mockMvc.perform(get("/api/tournaments"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(JSON_UTF8))
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -73,7 +73,7 @@ public class TournamentControllerTest {
         tournament1.setName("one");
         when(tournamentService.findById(anyString())).thenReturn(Optional.of(tournament1));
 
-        mockMvc.perform(get("/tournaments/1"))
+        mockMvc.perform(get("/api/tournaments/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(JSON_UTF8))
                 .andExpect(jsonPath("$.name").value("one"));
@@ -83,7 +83,7 @@ public class TournamentControllerTest {
     public void findOne_notFound() throws Exception {
         when(tournamentService.findById(anyString())).thenReturn(Optional.ofNullable(null));
 
-        mockMvc.perform(get("/tournaments/1"))
+        mockMvc.perform(get("/api/tournaments/1"))
                 .andExpect(status().isNotFound());
     }
 
@@ -93,7 +93,7 @@ public class TournamentControllerTest {
         tournament1.setName("one");
         when(tournamentService.create()).thenReturn(tournament1);
 
-        mockMvc.perform(post("/tournaments"))
+        mockMvc.perform(post("/api/tournaments"))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(JSON_UTF8))
                 .andExpect(jsonPath("$.name").value("one"));
@@ -108,7 +108,7 @@ public class TournamentControllerTest {
         String json = new ObjectMapper().writer().writeValueAsString(tournament1);
         when(tournamentService.update(any(Tournament.class))).thenReturn(Optional.of(tournament1));
 
-        mockMvc.perform(put("/tournaments/" + tournament1.getId()).content(json)
+        mockMvc.perform(put("/api/tournaments/" + tournament1.getId()).content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(JSON_UTF8))
@@ -124,7 +124,7 @@ public class TournamentControllerTest {
         String json = new ObjectMapper().writer().writeValueAsString(tournament1);
         when(tournamentService.update(any(Tournament.class))).thenReturn(Optional.ofNullable(null));
 
-        mockMvc.perform(put("/tournaments/" + tournament1.getId()).content(json)
+        mockMvc.perform(put("/api/tournaments/" + tournament1.getId()).content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -137,7 +137,7 @@ public class TournamentControllerTest {
         tournament1.setDivisions(new HashSet<>());
         String json = new ObjectMapper().writer().writeValueAsString(tournament1);
 
-        mockMvc.perform(put("/tournaments/1").content(json)
+        mockMvc.perform(put("/api/tournaments/1").content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -148,7 +148,7 @@ public class TournamentControllerTest {
         tournament1.setName("one");
         when(tournamentService.publish("1")).thenReturn(true);
 
-        mockMvc.perform(post("/tournaments/1/publish"))
+        mockMvc.perform(post("/api/tournaments/1/publish"))
                 .andExpect(status().isOk());
 
 
@@ -158,7 +158,7 @@ public class TournamentControllerTest {
     public void publish_notFound() throws Exception {
         when(tournamentService.publish("1")).thenReturn(false);
 
-        mockMvc.perform(post("/tournaments/1/publish"))
+        mockMvc.perform(post("/api/tournaments/1/publish"))
                 .andExpect(status().isNotFound());
     }
 
@@ -169,7 +169,7 @@ public class TournamentControllerTest {
         Optional<Tournament> optional = Optional.of(tournament1);
         when(tournamentService.remove("1")).thenReturn(optional);
 
-        mockMvc.perform(delete("/tournaments/1"))
+        mockMvc.perform(delete("/api/tournaments/1"))
                 .andExpect(status().isOk());
 
 
@@ -180,7 +180,7 @@ public class TournamentControllerTest {
         Optional<Tournament> optional = Optional.empty();
         when(tournamentService.remove("1")).thenReturn(optional);
 
-        mockMvc.perform(delete("/tournaments/1"))
+        mockMvc.perform(delete("/api/tournaments/1"))
                 .andExpect(status().isNotFound());
     }
 }

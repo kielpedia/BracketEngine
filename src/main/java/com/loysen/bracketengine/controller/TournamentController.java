@@ -29,7 +29,7 @@ import java.util.Set;
  * Created by kielpedia on 6/29/14.
  */
 @Controller
-@RequestMapping(value = "/tournaments")
+@RequestMapping(value = "/api/tournaments")
 public class TournamentController {
 
     private TournamentService tournamentService;
