@@ -1,16 +1,11 @@
 package com.loysen.bracketengine.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Set;
 
 /**
@@ -27,11 +22,7 @@ public class Tournament {
     private Set<String> divisions;
     private boolean published = false;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @NotNull
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime activationDate;
+    private Calendar activationDate;
 
 
     public String getId() {
@@ -68,11 +59,11 @@ public class Tournament {
         this.published = published;
     }
 
-    public LocalDateTime getActivationDate() {
+    public Calendar getActivationDate() {
         return activationDate;
     }
 
-    public void setActivationDate(LocalDateTime activationDate) {
+    public void setActivationDate(Calendar activationDate) {
         this.activationDate = activationDate;
     }
 

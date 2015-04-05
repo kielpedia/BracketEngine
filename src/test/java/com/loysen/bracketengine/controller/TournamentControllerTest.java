@@ -5,7 +5,6 @@ import com.loysen.bracketengine.model.Tournament;
 import com.loysen.bracketengine.service.ActorService;
 import com.loysen.bracketengine.service.BracketService;
 import com.loysen.bracketengine.service.TournamentService;
-import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.Charset;
-import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -105,6 +104,7 @@ public class TournamentControllerTest {
         tournament1.setName("one");
         tournament1.setId("one");
         tournament1.setDivisions(new HashSet<>());
+        tournament1.setActivationDate(Calendar.getInstance());
         String json = new ObjectMapper().writer().writeValueAsString(tournament1);
         when(tournamentService.update(any(Tournament.class))).thenReturn(Optional.of(tournament1));
 

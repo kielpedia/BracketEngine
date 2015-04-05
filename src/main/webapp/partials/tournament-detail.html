@@ -1,10 +1,55 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-3">
             <!--Body content-->
             <h2>Tournament: {{tournament.id}}</h2>
-            <input ng-model="tournament.name">
+            <input type="text" ng-model="tournament.name">
+
+            <div class="well">
+                <div class="dropdown">
+                    <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target="#"
+                       href="">
+                        <div class="input-group">
+                            <input type="text" class="form-control" data-ng-model="tournament.activationDate">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <datetimepicker data-ng-model="tournament.activationDate"
+                                        data-datetimepicker-config="{ dropdownSelector: '#dropdown2' }"/>
+                    </ul>
+                </div>
+            </div>
             <button ng-click="updateTournament()">Save</button>
+
+            <h2>Actors:</h2>
+
+            <form novalidate class="simple-form">
+                Name: <input type="text" ng-model="newActor.name">
+                <input type="hidden" ng-model='newActor.tournamentId'>
+                <button ng-click="addActor(newActor)">New</button>
+            </form>
+
+            <ul class="actors">
+                <li ng-repeat="actor in actors ">
+                    <p>{{actor.id}}</p>
+
+                    <p>{{actor.name}}</p>
+                    <button ng-click="deleteActor(actor)">Delete</button>
+                </li>
+            </ul>
+
+            <h2>Brackets:</h2>
+
+            <!--<button ng-click="addBracket()">New</button>-->
+
+            <ul class="brackets">
+                <li ng-repeat="bracket in brackets ">
+                    <p>{{bracket.id}}</p>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

@@ -57,6 +57,7 @@ public class TournamentServiceImpl implements TournamentService {
 
         original.setName(tournament.getName());
         original.setDivisions(tournament.getDivisions());
+        original.setActivationDate(tournament.getActivationDate());
 
 
         return Optional.ofNullable(tournamentRepository.save(original));

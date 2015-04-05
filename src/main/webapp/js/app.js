@@ -4,7 +4,7 @@
 
 var bracketEngineApp = angular.module('bracketEngineApp', [
     'ngRoute',
-
+    'ui.bootstrap.datetimepicker',
     'bracketEngineControllers',
     'bracketEngineServices'
 ]);

@@ -13,3 +13,23 @@ bracketEngineServices.factory('Tournament', ['$resource',
             update: {method: 'PUT'}
         });
     }]);
+
+bracketEngineServices.factory('Bracket', ['$resource',
+    function ($resource) {
+        return $resource('/api/tournaments/:tournamentId/brackets/:bracketId', {tournamentId: "@tournamentId"}, {
+            query: {method: 'GET', isArray: true},
+            create: {method: 'POST'},
+            update: {method: 'PUT'}
+        });
+    }]);
+
+bracketEngineServices.factory('Actor', ['$resource',
+    function ($resource) {
+        return $resource('/api/tournaments/:tournamentId/actors/:actorId', {
+            tournamentId: "@tournamentId"
+        }, {
+            query: {method: 'GET', isArray: true},
+            create: {method: 'POST'},
+            update: {method: 'PUT'}
+        });
+    }]);

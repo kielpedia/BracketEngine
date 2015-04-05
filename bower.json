@@ -6,11 +6,12 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.2.x",
-    "angular-route": "1.2.x",
-    "angular-loader": "1.2.x",
-    "angular-mocks": "~1.2.x",
-    "angular-resource": "~1.2.x",
+    "angular": "latest",
+    "angular-bootstrap-datetimepicker": "latest",
+    "angular-route": "latest",
+    "angular-loader": "latest",
+    "angular-mocks": "latest",
+    "angular-resource": "latest",
     "html5-boilerplate": "~4.3.0",
     "bootstrap": "~3.3.2"
   }
