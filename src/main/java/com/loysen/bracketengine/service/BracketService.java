@@ -7,7 +7,6 @@ import java.util.Set;
 
 /**
  * Service for reading and manipulating {@link Bracket} objects.
- * <p/>
  * Created by kielpedia on 6/29/14.
  */
 public interface BracketService {

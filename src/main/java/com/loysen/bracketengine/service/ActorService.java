@@ -7,7 +7,6 @@ import java.util.Set;
 
 /**
  * Service for reading and manipulation {@link Actor} objects
- * <p/>
  * Created by kielpedia on 8/8/14.
  */
 public interface ActorService {

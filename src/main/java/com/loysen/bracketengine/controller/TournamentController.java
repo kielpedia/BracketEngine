@@ -8,6 +8,7 @@ import com.loysen.bracketengine.model.Tournament;
 import com.loysen.bracketengine.service.ActorService;
 import com.loysen.bracketengine.service.BracketService;
 import com.loysen.bracketengine.service.TournamentService;
+import io.prometheus.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,12 @@ public class TournamentController {
     private BracketService bracketService;
     private ActorService actorService;
 
+    static final Summary requestLatency = Summary.build().name("requests_latency_seconds").help
+            ("Request " +
+                    "latency" +
+                    " " +
+                    "in seconds.").register();
+
     @Autowired
     public TournamentController(TournamentService tournamentService, BracketService bracketService, ActorService actorService) {
         this.tournamentService = tournamentService;
@@ -43,11 +50,17 @@ public class TournamentController {
 
     @RequestMapping(value = "/{tournamentId}", method = RequestMethod.GET)
     public ResponseEntity<Tournament> findOne(@PathVariable String tournamentId) {
+
+        Summary.Timer timer = requestLatency.startTimer();
         Optional<Tournament> tournament = tournamentService.findById(tournamentId);
 
+
         if (tournament.isPresent()) {
+            timer.observeDuration();
             return new ResponseEntity<>(tournament.get(), HttpStatus.OK);
         }
+
+
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

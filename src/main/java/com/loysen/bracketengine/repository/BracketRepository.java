@@ -13,6 +13,6 @@ public interface BracketRepository extends MongoRepository<Bracket, String> {
 
     public Bracket findByName(String bracketName);
 
-    public Set<Bracket> findByTournamentId(ObjectId tournamentId);
+    public Set<Bracket> findByTournamentId(String tournamentId);
 
 }
